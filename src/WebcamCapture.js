@@ -1,6 +1,9 @@
 import React, { useCallback, useRef, useState } from 'react'
 import Webcam from "react-webcam"
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
+import { useDispatch } from 'react-redux';
+import { setCameraImage } from './features/cameraSlice';
+import { useHistory } from 'react-router-dom';
 
 const videoConstraints = {
     width: 250,
@@ -11,14 +14,15 @@ const videoConstraints = {
 
 function WebcamCapture() {
     const webcamRef = useRef(null)
-    const [image, setImage] = useState(null);
+    const dispatch = useDispatch()
+    const history = useHistory();
 
     const capture = useCallback(() => {
         /* useCallback is basically like caching function */
         const imageSrc = webcamRef.current.getScreenshot();
-        console.log(imageSrc) // Base64 encoded jpeg format
-        setImage(imageSrc)
-    }, [webcamRef])
+        dispatch(setCameraImage(imageSrc))
+        history.push('/preview')
+    }, [webcamRef, dispatch, history])
 
     return (
         <div className="webcamCapture">
@@ -36,7 +40,6 @@ function WebcamCapture() {
                 onClick={capture}
                 fontSize="large"
             />
-            <img src={image} alt="" />
         </div>
     )
 }
